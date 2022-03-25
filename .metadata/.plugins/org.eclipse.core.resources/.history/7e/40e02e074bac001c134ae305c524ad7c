@@ -1,0 +1,83 @@
+package br.com.leite.contas.controller;
+
+import java.util.ArrayList;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.com.leite.contas.dao.ContaDAO;
+import br.com.leite.contas.model.Conta;
+import br.com.leite.contas.model.ContaCorrente;
+import br.com.leite.contas.model.ContaEspecial;
+
+@RestController
+public class ContaController {
+	
+	@Autowired
+	private ContaDAO dao;
+	
+	@GetMapping("/contas")
+	public ResponseEntity<ArrayList<Conta>> obterTodas(){
+		ArrayList<Conta> lista = (ArrayList<Conta>) dao.findAll();
+		
+		if(lista != null) {
+			return ResponseEntity.ok(lista);
+		}else {
+			return ResponseEntity.notFound().build();
+		}
+	}
+	
+	@GetMapping("/contas/{numero}")
+	public ResponseEntity<ContaCorrente> obterPorNumero(@PathVariable int numero){
+		ContaCorrente conta = dao.findById(numero).orElse(null);
+		
+		if(conta != null) {
+			return ResponseEntity.ok(conta);
+		}
+		return ResponseEntity.notFound().build();
+	}
+	
+	@PostMapping("/contacorrente")
+	public ResponseEntity<Conta> novaContaCorrente(@RequestBody ContaCorrente conta){
+		try {
+			Conta novaConta = dao.save(conta);
+			return ResponseEntity.ok(novaConta);
+		} catch (Exception e) {
+			return ResponseEntity.status(400).build();
+		}
+		
+	}
+	
+	@PostMapping("/contaespecial")
+	public ResponseEntity<Conta> novaContaEspecial(@RequestBody ContaEspecial conta){
+		try {
+			Conta novaConta = dao.save(conta);
+			return ResponseEntity.ok(novaConta);
+		} catch (Exception e) {
+			return ResponseEntity.status(400).build();
+		}
+	}
+	
+	@DeleteMapping("/delete/{numero}")
+	public ResponseEntity<Conta> deletarConta(@PathVariable int numero){
+		try{
+			dao.deleteById(numero);
+			return ResponseEntity.status(200).build();
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().build();
+		}
+	}
+	
+	@PutMapping("/sacar/{valor}")
+	public void sacarValor(@PathVariable double valor) {
+		//
+	}
+	
+}

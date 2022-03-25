@@ -1,0 +1,5 @@
+package br.com.leite.contas.dao;
+
+public interface EspecialDAO {
+
+}

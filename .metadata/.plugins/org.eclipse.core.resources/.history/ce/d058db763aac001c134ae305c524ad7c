@@ -1,0 +1,41 @@
+package br.com.leite.contas.controller;
+
+import java.util.ArrayList;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.com.leite.contas.dao.ContaDAO;
+import br.com.leite.contas.model.Conta;
+
+@RestController
+public class ContaController {
+	
+	@Autowired
+	private ContaDAO dao;
+	
+	@GetMapping("/contas")
+	public ResponseEntity<ArrayList<Conta>> obterTodas(){
+		ArrayList<Conta> lista = (ArrayList<Conta>) dao.findAll();
+		
+		if(lista != null) {
+			return ResponseEntity.ok(lista);
+		}else {
+			return ResponseEntity.notFound().build();
+		}
+	}
+	
+	@GetMapping("/contas/{numero}")
+	public ResponseEntity<Conta> obterPorNumero(@PathVariable int numero){
+		Conta conta = dao.findById(numero).orElse(null);
+		
+		if(conta != null) {
+			return ResponseEntity.ok(conta);
+		}else {
+			return ResponseEntity.notFound().build();
+		}
+	}
+}
